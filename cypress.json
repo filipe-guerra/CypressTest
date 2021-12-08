@@ -1,3 +1,4 @@
 {
-    "baseUrl": "https://stage.bitso.com"
+    "baseUrl": "https://stage.bitso.com", 
+    "defaultCommandTimeout": 10000
 }
