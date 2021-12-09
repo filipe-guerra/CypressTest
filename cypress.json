@@ -1,4 +1,6 @@
 {
     "baseUrl": "https://stage.bitso.com", 
-    "defaultCommandTimeout": 10000
+    "defaultCommandTimeout": 10000,
+    "waitForAnimations": false,
+    "animationDistanceThreshold": 50
 }

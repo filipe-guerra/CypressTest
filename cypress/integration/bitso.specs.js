@@ -1,4 +1,14 @@
- import { verifyErrorMessage } from './utils'
+import { verifyErrorMessage } from './utils'
+
+function userID_Alpha() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  
+    for (var i = 0; i < 10; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+  
+    return text;
+  }
 
 beforeEach(() => {
     cy.fixture("users").then((user) => {
@@ -14,62 +24,69 @@ describe('Scenario 1', () => {
     
     it("try to deposit Bitcoin", () => {
         cy.get('[for="btc"]').click()
-        cy.verifyErrorMessage()
+        cy.verifyErrorMessage('Bitcoin')
     });
     
-    // it("try to deposit Ethereum", () => {
-    //     cy.get('[for="eth"]').click()
-    //     cy.verifyErrorMessage()
-    // });
+    it("try to deposit Ethereum", () => {
+        cy.get('[for="eth"]').click()
+        cy.verifyErrorMessage('Ether')
+    });
     
-    // it("try to deposit BCH", () => {
-    //     cy.get('[for="bch"]').click()
-    //     cy.verifyErrorMessage()
-    // });
+    it("try to deposit BCH", () => {
+        cy.get('[for="bch"]').click()
+        cy.verifyErrorMessage('Bitcoin cash')
+    });
     
-    // it("try to deposit dai", () => {
-    //     cy.get('[for="dai"]').click()
-    //     cy.verifyErrorMessage()
-    // });
+    it("try to deposit dai", () => {
+        cy.get('[for="dai"]').click()
+        cy.verifyErrorMessage('Dai')
+    });
     
-    // it("try to deposit xrp", () => {
-    //     cy.get('[for="xrp"]').click()
-    //     cy.verifyErrorMessage()
-    // });
+    it("try to deposit xrp", () => {
+        cy.get('[for="xrp"]').click()
+        cy.verifyErrorMessage('XRP')
+    });
     
-    // it("try to deposit mana", () => {
-    //     cy.get('[for="mana"]').click()
-    //     cy.verifyErrorMessage()
-    // });
+    it("try to deposit mana", () => {
+        cy.get('[for="mana"]').click()
+        cy.verifyErrorMessage('MANA')
+    });
 })
 
 describe('Scenario 2', () => {
 
-    it("no name", () => {
-        cy.visit('/r/user/beneficiaries/add')
-        cy.get('[data-testid="add-beneficiary-button"]')
-            .should('be.disabled')
+    it("Add Beneficary", () => {
+        const randDay = () => Cypress._.random(1, 30)
+        const randYear = () => Cypress._.random(1932, 2021)
+        
+        cy.goFromMainScrenToProfile()
+        cy.url().should('include', '/r/user/overview') 
+        cy.get('[href="/r/user/beneficiaries"]').click()
+        cy.wait(2)
+        cy.get('main > div button')
+            .should('be.visible')
+            .focus()
             .click()
-        cy.get('#first_name').type('Put a random name here')
-        cy.get('#last_name').type('Put a random Lname here')
-        cy.get('#second_last_name').type('Put a random SLname here')
-        cy.get('[name="day"]').select("4")
-        cy.get('[name="month"]').select("May")
-        cy.get('[name="year"]').select("2001")
-        cy.get('[for="relationship"]').select("Relative")
+
+        cy.get('[data-testid="add-beneficiary-button"]').should('be.disabled')//.click().expect(fn).to.throw(Error)
+        cy.get('#first_name').type(userID_Alpha())
+        cy.get('#last_name').type(userID_Alpha())
+        cy.get('#second_last_name').type(userID_Alpha())
+        cy.get('#day').click().type("25{downarrow}{enter}")
+        cy.get('#month').click().type("May{downarrow}{enter}")
+        cy.get('#year').click().type("2015{downarrow}{enter}")
+        cy.get('[for="relationship"] ~ div .moon-select_arrow').click().type("{downarrow}{enter}")
         cy.get('#percentage').type('10')
-        cy.get('[data-testid="add-beneficiary-button"]').click()
+        cy.wait(1)
+        cy.get('[data-testid="add-beneficiary-button"]').should('be.enabled').click()
         
         cy.get('.modal-content', { timeout: 10000 }).contains('Confirm beneficiary')
         cy.get('#pin').type("123456")
         cy.get('.modal-content [type="primary"]')
             .should('be.enabled')
             .click()
-        cy.get('[type="error"]')
-            .should('be.displayed')
-            .contains('error message')
+        cy.get('[type="error"] > div', { timeout: 10000 })
+        .should('have.text', 'Incorrect PIN') 
+        // .should('have.text', 'Pin locked. Too many attempts, try again in 15 minutes.')
     });
-    
-
-    
 })
