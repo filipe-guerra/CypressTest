@@ -1,4 +1,6 @@
-import { verifyErrorMessage } from './utils'
+// ***********************************************
+// Test created by Filipe Guerra
+// ***********************************************
 
 function userID_Alpha() {
     var text = "";
